@@ -227,7 +227,7 @@
         status.innerHTML = '<div class="loading"></div> Preparando download...';
         progressBar.style.width = '30%';
 
-        const response = await fetch(`${window.location.origin}/api/download`, { // Atualizado para usar a URL correta
+        const response = await fetch(`${window.location.origin}/api/download`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
@@ -236,7 +236,10 @@
           }),
         });
 
-        if (!response.ok) throw new Error('Erro no servidor');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Erro desconhecido no servidor');
+        }
         
         const data = await response.json();
         progressBar.style.width = '100%';
@@ -248,6 +251,7 @@
         `;
 
       } catch (error) {
+        console.error('Erro no frontend:', error.message);
         status.innerHTML = `<div style="color:#ff4444">❌ ${error.message}</div>`;
         progressBar.style.width = '0%';
       }
