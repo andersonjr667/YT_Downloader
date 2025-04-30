@@ -218,7 +218,7 @@
       document.querySelector('.theme-toggle').textContent = '🌙';
     }
 
-    // Controle de Download (mantido da versão anterior)
+    // Controle de Download
     async function iniciarDownload() {
       const status = document.getElementById("status");
       const progressBar = document.getElementById("progressBar");
@@ -227,7 +227,7 @@
         status.innerHTML = '<div class="loading"></div> Preparando download...';
         progressBar.style.width = '30%';
 
-        const response = await fetch("http://localhost:3000/api/download", {
+        const response = await fetch(`${window.location.origin}/api/download`, { // Atualizado para usar a URL correta
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 

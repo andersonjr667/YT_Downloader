@@ -13,7 +13,7 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // Configurações de segurança melhoradas
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || BASE_URL,
+  origin: process.env.CORS_ORIGIN || '*', // Permitir todas as origens para testes
   methods: ['POST']
 }));
 
@@ -86,20 +86,24 @@ app.post('/api/download', async (req, res) => {
       return res.status(400).json({ error: 'Formato não suportado' });
     }
 
-    const child = execFile('yt-dlp', args, { timeout: 300000 }, (error) => {
+    execFile('yt-dlp', args, { timeout: 300000 }, (error) => {
       if (error) {
         console.error(`Erro: ${error.message}`);
         return res.status(500).json({ error: 'Falha no download. Verifique o link e tente novamente.' });
       }
-      res.json({ 
-        downloadUrl: `${BASE_URL}/downloads/${encodeURIComponent(filename)}`,
-        filename
+
+      // Enviar o arquivo diretamente ao navegador
+      res.download(filepath, filename, (err) => {
+        if (err) {
+          console.error('Erro ao enviar o arquivo:', err);
+          res.status(500).json({ error: 'Erro ao enviar o arquivo.' });
+        }
+        // Remover o arquivo após o envio
+        fs.unlink(filepath, (unlinkErr) => {
+          if (unlinkErr) console.error('Erro ao remover o arquivo:', unlinkErr);
+        });
       });
     });
-
-    child.stdout.on('data', (data) => console.log(data.toString()));
-    child.stderr.on('data', (data) => console.error(data.toString()));
-
   } catch (error) {
     console.error('Erro geral:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
