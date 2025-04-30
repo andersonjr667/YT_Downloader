@@ -1,4 +1,4 @@
 git status
 git add .
-git commit -m "Tentativa 1"
+git commit -m "Melhorias no backend e frontend, incluindo fallback de APIs e opções avançadas"
 git push origin main

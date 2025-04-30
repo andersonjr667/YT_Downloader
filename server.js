@@ -13,7 +13,7 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // Configurações de segurança e middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*', // Permitir todas as origens para testes
+  origin: process.env.CORS_ORIGIN || '*',
   methods: ['POST']
 }));
 app.use(bodyParser.json({ limit: '10mb' }));
@@ -57,13 +57,13 @@ setInterval(() => {
 exec('yt-dlp --version', (error, stdout) => {
   if (error) {
     console.error('Erro: yt-dlp não está instalado ou não está acessível.');
-    process.exit(1); // Finalizar o servidor se o yt-dlp não estiver disponível
+    process.exit(1);
   } else {
     console.log(`yt-dlp versão detectada: ${stdout.trim()}`);
   }
 });
 
-// Função para obter título usando yt-dlp
+// Funções para obter título
 const getTitleWithYtDlp = (url) => {
   return new Promise((resolve, reject) => {
     const getTitle = `yt-dlp --get-title --no-warnings "${url}"`;
@@ -77,7 +77,6 @@ const getTitleWithYtDlp = (url) => {
   });
 };
 
-// Função para obter título usando uma API alternativa
 const getTitleWithAlternativeApi = (url) => {
   return new Promise((resolve, reject) => {
     const getTitle = `alternative-api-command "${url}"`; // Substitua pelo comando real da API alternativa
@@ -109,7 +108,6 @@ app.post('/api/download', async (req, res) => {
     const outputDir = path.join(__dirname, 'downloads');
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-    // Tentar obter o título com yt-dlp, se falhar, usar a API alternativa
     let title;
     try {
       title = await getTitleWithYtDlp(url);
@@ -142,13 +140,11 @@ app.post('/api/download', async (req, res) => {
         return res.status(500).json({ error: 'Falha no download. Verifique o link e tente novamente.' });
       }
 
-      // Verificar se o arquivo foi criado
       if (!fs.existsSync(filepath)) {
         console.error('Arquivo não encontrado após o download:', filepath);
         return res.status(500).json({ error: 'Erro ao processar o arquivo baixado.' });
       }
 
-      // Compactação, se necessário
       let finalPath = filepath;
       if (compression === 'zip') {
         finalPath = `${filepath}.zip`;
@@ -158,7 +154,7 @@ app.post('/api/download', async (req, res) => {
             resolve();
           });
         });
-        fs.unlinkSync(filepath); // Remover o arquivo original
+        fs.unlinkSync(filepath);
       } else if (compression === '7z') {
         finalPath = `${filepath}.7z`;
         await new Promise((resolve, reject) => {
@@ -167,16 +163,14 @@ app.post('/api/download', async (req, res) => {
             resolve();
           });
         });
-        fs.unlinkSync(filepath); // Remover o arquivo original
+        fs.unlinkSync(filepath);
       }
 
-      // Enviar o arquivo diretamente ao navegador
       res.download(finalPath, path.basename(finalPath), (err) => {
         if (err) {
           console.error('Erro ao enviar o arquivo:', err.message);
           return res.status(500).json({ error: 'Erro ao enviar o arquivo.' });
         }
-        // Remover o arquivo após o envio
         fs.unlink(finalPath, (unlinkErr) => {
           if (unlinkErr) console.error('Erro ao remover o arquivo compactado:', unlinkErr.message);
         });
