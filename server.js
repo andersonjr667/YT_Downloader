@@ -59,6 +59,7 @@ app.post('/api/download', async (req, res) => {
     const { url, format } = req.body;
 
     if (!url || !format) {
+      console.error('Requisição inválida: URL ou formato ausente.');
       return res.status(400).json({ error: 'URL e formato são obrigatórios.' });
     }
 
@@ -76,7 +77,7 @@ app.post('/api/download', async (req, res) => {
       execFile('sh', ['-c', getTitle], (error, stdout) => {
         if (error) {
           console.error('Erro ao obter título:', error.message);
-          return reject(error);
+          return reject(new Error('Erro ao obter o título do vídeo.'));
         }
         resolve(sanitize(stdout.toString().trim()));
       })

@@ -6,23 +6,23 @@
   <title>YouTube Downloader - Dark Mode</title>
   <style>
     :root {
-      --primary-color: #2b9bbd;
-      --secondary-color: #fc9403;
-      --bg-color: #1a1a1a;
-      --text-color: #ffffff;
-      --input-bg: #2d2d2d;
-      --container-bg: #262626;
-      --border-color: #3d3d3d;
-      --progress-bg: #333;
+      --primary-color: #FF0000; /* Vermelho do YouTube */
+      --secondary-color: #282828; /* Fundo escuro */
+      --bg-color: #F9F9F9; /* Fundo claro */
+      --text-color: #282828; /* Texto escuro */
+      --input-bg: #FFFFFF; /* Fundo dos inputs */
+      --container-bg: #FFFFFF; /* Fundo dos containers */
+      --border-color: #E5E5E5; /* Bordas suaves */
+      --progress-bg: #CCCCCC; /* Fundo da barra de progresso */
     }
 
     .light-theme {
-      --bg-color: #f5f5f5;
-      --text-color: #333;
-      --input-bg: #ffffff;
-      --container-bg: #ffffff;
-      --border-color: #ddd;
-      --progress-bg: #eee;
+      --bg-color: #FFFFFF; /* Fundo claro */
+      --text-color: #282828; /* Texto escuro */
+      --input-bg: #F9F9F9; /* Fundo dos inputs */
+      --container-bg: #FFFFFF; /* Fundo dos containers */
+      --border-color: #E5E5E5; /* Bordas suaves */
+      --progress-bg: #CCCCCC; /* Fundo da barra de progresso */
     }
 
     * {
@@ -44,7 +44,7 @@
       padding: 30px;
       background-color: var(--container-bg);
       border-radius: 15px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
       border: 1px solid var(--border-color);
     }
 
@@ -79,13 +79,13 @@
     input:focus, select:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(43, 155, 189, 0.2);
+      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
     }
 
     button {
       width: 100%;
       padding: 15px;
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      background: var(--primary-color);
       border: none;
       border-radius: 8px;
       color: white;
@@ -112,14 +112,16 @@
       display: inline-block;
       width: 24px;
       height: 24px;
-      border: 3px solid rgba(255,255,255,0.3);
+      border: 3px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: var(--primary-color);
       animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .theme-toggle {
@@ -149,7 +151,7 @@
 
     .progress-bar {
       height: 100%;
-      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      background: var(--primary-color);
       transition: width 0.3s ease;
     }
 
