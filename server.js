@@ -10,6 +10,7 @@ const sanitize = require('sanitize-filename');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
+const YTDLP_TIMEOUT = process.env.YTDLP_TIMEOUT || 300000; // Timeout configurável
 
 // Configurações de segurança e middleware
 app.use(cors({
@@ -53,15 +54,21 @@ setInterval(() => {
   });
 }, 3600000);
 
-// Verificar se o yt-dlp está instalado
-exec('yt-dlp --version', (error, stdout) => {
-  if (error) {
-    console.error('Erro: yt-dlp não está instalado ou não está acessível.');
-    process.exit(1);
-  } else {
-    console.log(`yt-dlp versão detectada: ${stdout.trim()}`);
-  }
-});
+// Verificar se as dependências estão instaladas
+const checkDependencies = () => {
+  const dependencies = ['yt-dlp', 'zip', '7z'];
+  dependencies.forEach(dep => {
+    exec(`${dep} --version`, (error, stdout) => {
+      if (error) {
+        console.error(`Erro: ${dep} não está instalado ou não está acessível.`);
+        process.exit(1); // Finalizar o servidor se uma dependência não estiver disponível
+      } else {
+        console.log(`${dep} versão detectada: ${stdout.trim()}`);
+      }
+    });
+  });
+};
+checkDependencies();
 
 // Funções para obter título
 const getTitleWithYtDlp = (url) => {
@@ -134,7 +141,7 @@ app.post('/api/download', async (req, res) => {
       return res.status(400).json({ error: 'Formato não suportado.' });
     }
 
-    execFile('yt-dlp', args, { timeout: 300000 }, async (error) => {
+    execFile('yt-dlp', args, { timeout: YTDLP_TIMEOUT }, async (error) => {
       if (error) {
         console.error('Erro ao baixar o vídeo:', error.message);
         return res.status(500).json({ error: 'Falha no download. Verifique o link e tente novamente.' });

@@ -3,270 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Downloader - Dark Mode</title>
-  <style>
-    :root {
-      --primary-color: #FF0000; /* Vermelho do YouTube */
-      --secondary-color: #282828; /* Fundo escuro */
-      --bg-color: #F9F9F9; /* Fundo claro */
-      --text-color: #282828; /* Texto escuro */
-      --input-bg: #FFFFFF; /* Fundo dos inputs */
-      --container-bg: #FFFFFF; /* Fundo dos containers */
-      --border-color: #E5E5E5; /* Bordas suaves */
-      --progress-bg: #CCCCCC; /* Fundo da barra de progresso */
-    }
-
-    .light-theme {
-      --bg-color: #FFFFFF; /* Fundo claro */
-      --text-color: #282828; /* Texto escuro */
-      --input-bg: #F9F9F9; /* Fundo dos inputs */
-      --container-bg: #FFFFFF; /* Fundo dos containers */
-      --border-color: #E5E5E5; /* Bordas suaves */
-      --progress-bg: #CCCCCC; /* Fundo da barra de progresso */
-    }
-
-    * {
-      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-    }
-
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 30px;
-      background-color: var(--container-bg);
-      border-radius: 15px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--border-color);
-    }
-
-    h1 {
-      text-align: center;
-      color: var(--primary-color);
-      margin: 0 0 30px 0;
-      font-size: 2.2em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    label {
-      display: block;
-      margin: 25px 0 8px 0;
-      font-weight: 600;
-      color: var(--text-color);
-    }
-
-    input, select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-      background-color: var(--input-bg);
-      color: var(--text-color);
-      font-size: 16px;
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
-    }
-
-    button {
-      width: 100%;
-      padding: 15px;
-      background: var(--primary-color);
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 25px;
-      transition: transform 0.2s, opacity 0.2s;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
-
-    #status {
-      margin-top: 25px;
-      padding: 15px;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    .loading {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--primary-color);
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--container-bg);
-      border: 2px solid var(--border-color);
-      padding: 10px;
-      border-radius: 50%;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .progress-container {
-      width: 100%;
-      height: 8px;
-      background-color: var(--progress-bg);
-      border-radius: 4px;
-      margin-top: 20px;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: var(--primary-color);
-      transition: width 0.3s ease;
-    }
-
-    .download-link {
-      display: block;
-      padding: 15px;
-      background-color: var(--input-bg);
-      border-radius: 8px;
-      text-decoration: none;
-      color: var(--primary-color);
-      border: 2px solid var(--border-color);
-      margin-top: 15px;
-      transition: transform 0.2s;
-    }
-
-    .download-link:hover {
-      transform: translateX(5px);
-      border-color: var(--primary-color);
-    }
-
-  </style>
+  <title>YouTube Downloader</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
-  
-  <div class="container">
+  <header>
     <h1>🎬 YouTube Downloader</h1>
+    <p>Baixe vídeos e áudios do YouTube com facilidade!</p>
+  </header>
 
-    <label for="urlInput">🔗 Link do YouTube</label>
-    <input 
-      type="url" 
-      id="urlInput" 
-      placeholder="https://youtube.com/..."
-      pattern="^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+"
-      required
-    >
-
-    <label for="formatSelect">📁 Formato de Saída</label>
-    <select id="formatSelect">
-      <option value="mp3">🎵 Áudio MP3</option>
-      <option value="mp4">🎥 Vídeo MP4</option>
-    </select>
-
-    <!-- Botão para exibir/ocultar opções avançadas -->
-    <button type="button" id="toggleAdvancedOptions" style="margin-top: 20px;">⚙️ Mostrar Opções Avançadas</button>
-
-    <!-- Seção avançada -->
-    <div id="advancedOptions" style="margin-top: 20px; display: none;">
-      <h3>⚙️ Opções Avançadas</h3>
-
-      <label for="filenameInput">📝 Nome do Arquivo</label>
+  <main class="container">
+    <form id="downloadForm">
+      <label for="urlInput">🔗 Link do YouTube</label>
       <input 
-        type="text" 
-        id="filenameInput" 
-        placeholder="Digite o nome do arquivo (opcional)"
+        type="url" 
+        id="urlInput" 
+        placeholder="https://youtube.com/..."
+        pattern="^(https?\:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+"
+        required
       >
 
-      <label for="compressionSelect">📦 Compactação</label>
-      <select id="compressionSelect">
-        <option value="none">Sem Compactação</option>
-        <option value="zip">ZIP</option>
-        <option value="7z">7z</option>
+      <label for="formatSelect">📁 Formato de Saída</label>
+      <select id="formatSelect">
+        <option value="mp3">🎵 Áudio MP3</option>
+        <option value="mp4">🎥 Vídeo MP4</option>
       </select>
 
-      <label for="qualitySelect">🎥 Qualidade do Vídeo</label>
-      <select id="qualitySelect">
-        <option value="best">Melhor Qualidade</option>
-        <option value="medium">Qualidade Média</option>
-        <option value="low">Qualidade Baixa</option>
-      </select>
+      <button type="button" id="toggleAdvancedOptions">⚙️ Mostrar Opções Avançadas</button>
 
-      <label for="resolutionSelect">📏 Resolução</label>
-      <select id="resolutionSelect">
-        <option value="1080p">1080p</option>
-        <option value="720p">720p</option>
-        <option value="480p">480p</option>
-        <option value="360p">360p</option>
-        <option value="240p">240p</option>
-      </select>
+      <div id="advancedOptions" style="display: none;">
+        <h3>⚙️ Opções Avançadas</h3>
 
-      <label for="sizeLimitInput">📂 Limite de Tamanho (MB)</label>
-      <input 
-        type="number" 
-        id="sizeLimitInput" 
-        placeholder="Exemplo: 100 (opcional)"
-        min="1"
-      >
-    </div>
+        <label for="filenameInput">📝 Nome do Arquivo</label>
+        <input 
+          type="text" 
+          id="filenameInput" 
+          placeholder="Digite o nome do arquivo (opcional)"
+        >
 
-    <button onclick="iniciarDownload()">⬇️ Iniciar Download</button>
+        <label for="compressionSelect">📦 Compactação</label>
+        <select id="compressionSelect">
+          <option value="none">Sem Compactação</option>
+          <option value="zip">ZIP</option>
+          <option value="7z">7z</option>
+        </select>
+
+        <label for="qualitySelect">🎥 Qualidade do Vídeo</label>
+        <select id="qualitySelect">
+          <option value="best">Melhor Qualidade</option>
+          <option value="medium">Qualidade Média</option>
+          <option value="low">Qualidade Baixa</option>
+        </select>
+
+        <label for="resolutionSelect">📏 Resolução</label>
+        <select id="resolutionSelect">
+          <option value="1080p">1080p</option>
+          <option value="720p">720p</option>
+          <option value="480p">480p</option>
+          <option value="360p">360p</option>
+          <option value="240p">240p</option>
+        </select>
+
+        <label for="sizeLimitInput">📂 Limite de Tamanho (MB)</label>
+        <input 
+          type="number" 
+          id="sizeLimitInput" 
+          placeholder="Exemplo: 100 (opcional)"
+          min="1"
+        >
+      </div>
+
+      <button type="submit">⬇️ Iniciar Download</button>
+    </form>
 
     <div class="progress-container" id="progressContainer">
       <div class="progress-bar" id="progressBar" style="width: 0%"></div>
     </div>
 
     <div id="status"></div>
-  </div>
+  </main>
+
+  <footer>
+    <p>Desenvolvido por <strong>Você</strong>. © 2023</p>
+  </footer>
 
   <script>
-    // Controle de Tema
-    function toggleTheme() {
-      document.body.classList.toggle('light-theme');
-      const isLight = document.body.classList.contains('light-theme');
-      localStorage.setItem('theme', isLight ? 'light' : 'dark');
-      document.querySelector('.theme-toggle').textContent = isLight ? '🌙' : '🌞';
-    }
-
-    // Carregar tema salvo
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    if (savedTheme === 'light') {
-      document.body.classList.add('light-theme');
-      document.querySelector('.theme-toggle').textContent = '🌙';
-    }
-
-    // Exibir/ocultar opções avançadas
     document.getElementById('toggleAdvancedOptions').addEventListener('click', () => {
       const advancedOptions = document.getElementById('advancedOptions');
       const isVisible = advancedOptions.style.display === 'block';
@@ -276,8 +97,8 @@
         : '⚙️ Ocultar Opções Avançadas';
     });
 
-    // Controle de Download
-    async function iniciarDownload() {
+    document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
       const status = document.getElementById("status");
       const progressBar = document.getElementById("progressBar");
       
@@ -318,12 +139,6 @@
         status.innerHTML = `<div style="color:#ff4444">❌ ${error.message}</div>`;
         progressBar.style.width = '0%';
       }
-    }
-
-    // Validação em tempo real
-    document.getElementById('urlInput').addEventListener('input', function(e) {
-      const isValid = e.target.validity.valid;
-      e.target.style.borderColor = isValid ? 'var(--border-color)' : '#ff4444';
     });
   </script>
 </body>

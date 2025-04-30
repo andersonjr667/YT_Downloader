@@ -1,53 +1,103 @@
+:root {
+  --primary-color: #FF0000;
+  --secondary-color: #282828;
+  --bg-color: #F9F9F9;
+  --text-color: #333;
+  --input-bg: #FFFFFF;
+  --container-bg: #FFFFFF;
+  --border-color: #E5E5E5;
+  --progress-bg: #CCCCCC;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f2f2;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   margin: 0;
   padding: 0;
 }
 
-.container {
-  max-width: 500px;
-  margin: 60px auto;
+header {
+  text-align: center;
   padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background-color: var(--primary-color);
+  color: white;
 }
 
-h1 {
-  text-align: center;
-  color: #2b9bbd;
+header h1 {
+  margin: 0;
+  font-size: 2.5em;
+}
+
+header p {
+  margin: 5px 0 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: var(--container-bg);
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
 }
 
 label {
   display: block;
-  margin-top: 20px;
+  margin: 15px 0 5px;
   font-weight: bold;
 }
 
-input,
-select {
+input, select, button {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
 }
 
 button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 12px;
-  background-color: #fc9403;
-  border: none;
+  background-color: var(--primary-color);
   color: white;
-  font-size: 16px;
-  border-radius: 5px;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 button:hover {
-  background-color: #e58302;
+  background-color: #cc0000;
+  transform: translateY(-2px);
+}
+
+.progress-container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--progress-bg);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+footer {
+  text-align: center;
+  padding: 10px;
+  background-color: var(--secondary-color);
+  color: white;
+  font-size: 14px;
 }
 
 #status {
