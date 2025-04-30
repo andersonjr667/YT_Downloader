@@ -1,4 +1,4 @@
 git status
 git add .
-git commit -m "Melhorias no frontend e backend para garantir o funcionamento do YouTube Downloader"
+git commit -m "Adicionadas opções avançadas no frontend, incluindo qualidade, resolução, compactação e limite de tamanho do arquivo"
 git push origin main

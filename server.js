@@ -56,7 +56,7 @@ setInterval(() => {
 // Rota de download
 app.post('/api/download', async (req, res) => {
   try {
-    const { url, format } = req.body;
+    const { url, format, filename, compression } = req.body;
 
     if (!url || !format) {
       console.error('Requisição inválida: URL ou formato ausente.');
@@ -83,8 +83,13 @@ app.post('/api/download', async (req, res) => {
       })
     );
 
-    const filename = `${title}_${Date.now()}.${format}`;
-    const filepath = path.join(outputDir, filename);
+    if (!title) {
+      console.error('Título do vídeo não encontrado.');
+      return res.status(500).json({ error: 'Não foi possível obter o título do vídeo.' });
+    }
+
+    const baseFilename = filename || `${title}_${Date.now()}`;
+    const filepath = path.join(outputDir, `${baseFilename}.${format}`);
 
     let args = [];
     if (format === 'mp3') {
@@ -96,21 +101,49 @@ app.post('/api/download', async (req, res) => {
       return res.status(400).json({ error: 'Formato não suportado.' });
     }
 
-    execFile('yt-dlp', args, { timeout: 300000 }, (error) => {
+    execFile('yt-dlp', args, { timeout: 300000 }, async (error) => {
       if (error) {
         console.error('Erro ao baixar o vídeo:', error.message);
         return res.status(500).json({ error: 'Falha no download. Verifique o link e tente novamente.' });
       }
 
+      // Verificar se o arquivo foi criado
+      if (!fs.existsSync(filepath)) {
+        console.error('Arquivo não encontrado após o download:', filepath);
+        return res.status(500).json({ error: 'Erro ao processar o arquivo baixado.' });
+      }
+
+      // Compactação, se necessário
+      let finalPath = filepath;
+      if (compression === 'zip') {
+        finalPath = `${filepath}.zip`;
+        await new Promise((resolve, reject) => {
+          execFile('zip', ['-j', finalPath, filepath], (err) => {
+            if (err) return reject(err);
+            resolve();
+          });
+        });
+        fs.unlinkSync(filepath); // Remover o arquivo original
+      } else if (compression === '7z') {
+        finalPath = `${filepath}.7z`;
+        await new Promise((resolve, reject) => {
+          execFile('7z', ['a', finalPath, filepath], (err) => {
+            if (err) return reject(err);
+            resolve();
+          });
+        });
+        fs.unlinkSync(filepath); // Remover o arquivo original
+      }
+
       // Enviar o arquivo diretamente ao navegador
-      res.download(filepath, filename, (err) => {
+      res.download(finalPath, path.basename(finalPath), (err) => {
         if (err) {
           console.error('Erro ao enviar o arquivo:', err.message);
           return res.status(500).json({ error: 'Erro ao enviar o arquivo.' });
         }
         // Remover o arquivo após o envio
-        fs.unlink(filepath, (unlinkErr) => {
-          if (unlinkErr) console.error('Erro ao remover o arquivo:', unlinkErr.message);
+        fs.unlink(finalPath, (unlinkErr) => {
+          if (unlinkErr) console.error('Erro ao remover o arquivo compactado:', unlinkErr.message);
         });
       });
     });

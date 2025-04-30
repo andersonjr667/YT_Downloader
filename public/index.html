@@ -195,6 +195,49 @@
       <option value="mp4">🎥 Vídeo MP4</option>
     </select>
 
+    <!-- Seção avançada -->
+    <div id="advancedOptions" style="margin-top: 20px;">
+      <h3>⚙️ Opções Avançadas</h3>
+
+      <label for="filenameInput">📝 Nome do Arquivo</label>
+      <input 
+        type="text" 
+        id="filenameInput" 
+        placeholder="Digite o nome do arquivo (opcional)"
+      >
+
+      <label for="compressionSelect">📦 Compactação</label>
+      <select id="compressionSelect">
+        <option value="none">Sem Compactação</option>
+        <option value="zip">ZIP</option>
+        <option value="7z">7z</option>
+      </select>
+
+      <label for="qualitySelect">🎥 Qualidade do Vídeo</label>
+      <select id="qualitySelect">
+        <option value="best">Melhor Qualidade</option>
+        <option value="medium">Qualidade Média</option>
+        <option value="low">Qualidade Baixa</option>
+      </select>
+
+      <label for="resolutionSelect">📏 Resolução</label>
+      <select id="resolutionSelect">
+        <option value="1080p">1080p</option>
+        <option value="720p">720p</option>
+        <option value="480p">480p</option>
+        <option value="360p">360p</option>
+        <option value="240p">240p</option>
+      </select>
+
+      <label for="sizeLimitInput">📂 Limite de Tamanho (MB)</label>
+      <input 
+        type="number" 
+        id="sizeLimitInput" 
+        placeholder="Exemplo: 100 (opcional)"
+        min="1"
+      >
+    </div>
+
     <button onclick="iniciarDownload()">⬇️ Iniciar Download</button>
 
     <div class="progress-container" id="progressContainer">
@@ -234,7 +277,12 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
             url: document.getElementById("urlInput").value.trim(),
-            format: document.getElementById("formatSelect").value
+            format: document.getElementById("formatSelect").value,
+            filename: document.getElementById("filenameInput").value.trim(),
+            compression: document.getElementById("compressionSelect").value,
+            quality: document.getElementById("qualitySelect").value,
+            resolution: document.getElementById("resolutionSelect").value,
+            sizeLimit: document.getElementById("sizeLimitInput").value.trim()
           }),
         });
 
