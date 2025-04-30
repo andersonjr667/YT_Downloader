@@ -1,4 +1,4 @@
 git status
 git add .
-git commit -m "Adicionadas opções avançadas no frontend, incluindo qualidade, resolução, compactação e limite de tamanho do arquivo"
+git commit -m "Tentativa 1"
 git push origin main

@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const { execFile } = require('child_process');
+const { execFile, exec } = require('child_process');
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -53,10 +53,48 @@ setInterval(() => {
   });
 }, 3600000);
 
+// Verificar se o yt-dlp está instalado
+exec('yt-dlp --version', (error, stdout) => {
+  if (error) {
+    console.error('Erro: yt-dlp não está instalado ou não está acessível.');
+    process.exit(1); // Finalizar o servidor se o yt-dlp não estiver disponível
+  } else {
+    console.log(`yt-dlp versão detectada: ${stdout.trim()}`);
+  }
+});
+
+// Função para obter título usando yt-dlp
+const getTitleWithYtDlp = (url) => {
+  return new Promise((resolve, reject) => {
+    const getTitle = `yt-dlp --get-title --no-warnings "${url}"`;
+    execFile('sh', ['-c', getTitle], (error, stdout) => {
+      if (error) {
+        console.error('Erro ao obter título com yt-dlp:', error.message);
+        return reject(new Error('Erro ao obter o título do vídeo com yt-dlp.'));
+      }
+      resolve(sanitize(stdout.toString().trim()));
+    });
+  });
+};
+
+// Função para obter título usando uma API alternativa
+const getTitleWithAlternativeApi = (url) => {
+  return new Promise((resolve, reject) => {
+    const getTitle = `alternative-api-command "${url}"`; // Substitua pelo comando real da API alternativa
+    execFile('sh', ['-c', getTitle], (error, stdout) => {
+      if (error) {
+        console.error('Erro ao obter título com API alternativa:', error.message);
+        return reject(new Error('Erro ao obter o título do vídeo com API alternativa.'));
+      }
+      resolve(sanitize(stdout.toString().trim()));
+    });
+  });
+};
+
 // Rota de download
 app.post('/api/download', async (req, res) => {
   try {
-    const { url, format, filename, compression } = req.body;
+    const { url, format, filename, compression, quality, resolution, sizeLimit } = req.body;
 
     if (!url || !format) {
       console.error('Requisição inválida: URL ou formato ausente.');
@@ -71,21 +109,18 @@ app.post('/api/download', async (req, res) => {
     const outputDir = path.join(__dirname, 'downloads');
     if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-    // Obter título do vídeo
-    const getTitle = `yt-dlp --get-title --no-warnings "${url}"`;
-    const title = await new Promise((resolve, reject) => 
-      execFile('sh', ['-c', getTitle], (error, stdout) => {
-        if (error) {
-          console.error('Erro ao obter título:', error.message);
-          return reject(new Error('Erro ao obter o título do vídeo.'));
-        }
-        resolve(sanitize(stdout.toString().trim()));
-      })
-    );
-
-    if (!title) {
-      console.error('Título do vídeo não encontrado.');
-      return res.status(500).json({ error: 'Não foi possível obter o título do vídeo.' });
+    // Tentar obter o título com yt-dlp, se falhar, usar a API alternativa
+    let title;
+    try {
+      title = await getTitleWithYtDlp(url);
+    } catch (ytDlpError) {
+      console.warn('yt-dlp falhou, tentando API alternativa...');
+      try {
+        title = await getTitleWithAlternativeApi(url);
+      } catch (altApiError) {
+        console.error('Ambas as APIs falharam ao obter o título do vídeo.');
+        return res.status(500).json({ error: 'Não foi possível obter o título do vídeo.' });
+      }
     }
 
     const baseFilename = filename || `${title}_${Date.now()}`;

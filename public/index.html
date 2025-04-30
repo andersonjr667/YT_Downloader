@@ -195,8 +195,11 @@
       <option value="mp4">🎥 Vídeo MP4</option>
     </select>
 
+    <!-- Botão para exibir/ocultar opções avançadas -->
+    <button type="button" id="toggleAdvancedOptions" style="margin-top: 20px;">⚙️ Mostrar Opções Avançadas</button>
+
     <!-- Seção avançada -->
-    <div id="advancedOptions" style="margin-top: 20px;">
+    <div id="advancedOptions" style="margin-top: 20px; display: none;">
       <h3>⚙️ Opções Avançadas</h3>
 
       <label for="filenameInput">📝 Nome do Arquivo</label>
@@ -262,6 +265,16 @@
       document.body.classList.add('light-theme');
       document.querySelector('.theme-toggle').textContent = '🌙';
     }
+
+    // Exibir/ocultar opções avançadas
+    document.getElementById('toggleAdvancedOptions').addEventListener('click', () => {
+      const advancedOptions = document.getElementById('advancedOptions');
+      const isVisible = advancedOptions.style.display === 'block';
+      advancedOptions.style.display = isVisible ? 'none' : 'block';
+      document.getElementById('toggleAdvancedOptions').textContent = isVisible
+        ? '⚙️ Mostrar Opções Avançadas'
+        : '⚙️ Ocultar Opções Avançadas';
+    });
 
     // Controle de Download
     async function iniciarDownload() {
