@@ -1,4 +1,5 @@
 git status
 git add .
-git commit -m "1.1"
+git commit -m "Atualização do projeto para deploy no Render"
 git push origin main
+# Verifique o status do serviço em https://render.com

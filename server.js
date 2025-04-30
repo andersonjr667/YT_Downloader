@@ -9,19 +9,28 @@ const sanitize = require('sanitize-filename');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // Configurações de segurança melhoradas
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || BASE_URL,
   methods: ['POST']
 }));
 
 app.use(bodyParser.json({ limit: '10mb' }));
-app.use(express.static('downloads', {
+app.use(express.static(path.join(__dirname, 'downloads'), {
   setHeaders: (res) => {
     res.set('X-Content-Type-Options', 'nosniff');
   }
 }));
+
+// Servir arquivos estáticos do diretório 'public'
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rota para servir o index.html como padrão
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Validação de URL melhorada
 const isValidUrl = (url) => {
@@ -34,6 +43,7 @@ setInterval(() => {
   const cleanupDir = path.join(__dirname, 'downloads');
   const hour = 3600000;
   fs.readdir(cleanupDir, (err, files) => {
+    if (err) return console.error(err);
     files.forEach(file => {
       const filePath = path.join(cleanupDir, file);
       const stat = fs.statSync(filePath);
@@ -57,9 +67,12 @@ app.post('/api/download', async (req, res) => {
 
     // Obter título do vídeo para nome do arquivo
     const getTitle = `yt-dlp --get-title --no-warnings "${url}"`;
-    const title = await new Promise((resolve) => execFile('sh', ['-c', getTitle], (_, stdout) => 
-      resolve(sanitize(stdout.toString().trim()))
-    ));
+    const title = await new Promise((resolve, reject) => 
+      execFile('sh', ['-c', getTitle], (error, stdout) => {
+        if (error) return reject(error);
+        resolve(sanitize(stdout.toString().trim()));
+      })
+    );
 
     const filename = `${title}_${Date.now()}.${format}`;
     const filepath = path.join(outputDir, filename);
@@ -79,7 +92,7 @@ app.post('/api/download', async (req, res) => {
         return res.status(500).json({ error: 'Falha no download. Verifique o link e tente novamente.' });
       }
       res.json({ 
-        downloadUrl: `${process.env.BASE_URL || 'http://localhost:' + PORT}/${encodeURIComponent(filename)}`,
+        downloadUrl: `${BASE_URL}/downloads/${encodeURIComponent(filename)}`,
         filename
       });
     });
